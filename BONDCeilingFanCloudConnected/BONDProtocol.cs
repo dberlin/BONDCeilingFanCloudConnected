@@ -1,12 +1,12 @@
 ﻿namespace BONDCeilingFanCloudConnected
 {
     using System;
-    using System.Net.Http;
     using BONDDevice;
     using Crestron.RAD.Common.BasicDriver;
     using Crestron.RAD.Common.Transports;
     using Flurl;
     using Flurl.Http;
+    using Newtonsoft.Json;
 
     public class BONDProtocol : ABaseDriverProtocol
     {
@@ -21,7 +21,7 @@
         public BONDProtocol(ISerialTransport transport, byte id) : base(transport, id)
         {
             this.EnableLogging = true;
-            this.PollingInterval = 5000;
+            this.PollingInterval = 10000;
         }
 
 
@@ -137,7 +137,7 @@
                     return this.MakeActionURL(actionName)
                         .WithHeader("BOND-Token", this.deviceToken)
                         .WithTimeout(ActionTimeoutLength)
-                        .SendUrlEncodedAsync(HttpMethod.Put, "")
+                        .PutAsync()
                         .Result
                         .StatusCode == 200;
                 }
@@ -156,13 +156,11 @@
             {
                 lock (this.updateLock)
                 {
+                    var serializedContent = JsonConvert.SerializeObject(new {argument = value});
                     return this.MakeActionURL(actionName)
                         .WithHeader("BOND-Token", this.deviceToken)
                         .WithTimeout(ActionTimeoutLength)
-                        .SendUrlEncodedAsync(HttpMethod.Put, new
-                        {
-                            argument = value,
-                        })
+                        .PutStringAsync(serializedContent)
                         .Result.StatusCode == 200;
                 }
             }
