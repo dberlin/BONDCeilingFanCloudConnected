@@ -1,5 +1,5 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <UsingTask TaskName="ReplaceFileText" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <UsingTask TaskName="ReplaceFileText" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
         <ParameterGroup>
             <InputFilename ParameterType="System.String" Required="true"/>
             <OutputFilename ParameterType="System.String" Required="true"/>
@@ -7,7 +7,6 @@
             <ReplacementText ParameterType="System.String" Required="true"/>
         </ParameterGroup>
         <Task>
-            <Reference Include="System.Core"/>
             <Using Namespace="System"/>
             <Using Namespace="System.IO"/>
             <Using Namespace="System.Text.RegularExpressions"/>
@@ -21,14 +20,50 @@
             </Code>
         </Task>
     </UsingTask>
-    <UsingTask TaskName="UpdateVersionDate" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <UsingTask TaskName="ExtractXMLUIProperties" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+        <ParameterGroup>
+            <InputFilename ParameterType="System.String" Required="true"/>
+            <OutputFilename ParameterType="System.String" Required="true"/>
+            <NamespaceName ParameterType="System.String" Required="true"/>
+            <ClassName ParameterType="System.String" Required="true"/>
+        </ParameterGroup>
+        <Task>
+            <Reference Include="System.Memory"/>
+            <Reference Include="Microsoft.Build"/>
+            <Reference Include="Microsoft.Build.Framework"/>
+            <Using Namespace="System"/>
+            <Using Namespace="System.Xml"/>
+            <Using Namespace="System.IO"/>
+            <Using Namespace="System.Text"/>
+            <Using Namespace="Microsoft.Build.Utilities"/>
+            <Using Namespace="Microsoft.Build.Framework"/>
+            <Code Type="Fragment" Language="cs">
+                <![CDATA[
+            //obtain a list of environment nodes in the substitution config
+            XmlDocument doc = new XmlDocument();
+            doc.Load(InputFilename);
+            List<string> UIProps = doc.DocumentElement.SelectNodes(@"//@*[starts-with(., '{')]").Cast<XmlAttribute>().Select(x => x.Value.Substring(1, x.Value.Length-2)).ToList();
+            string OutputFileText = $"namespace {NamespaceName}" + Environment.NewLine;
+            OutputFileText += "{" + Environment.NewLine;
+            OutputFileText += $"\tpublic static class {ClassName}" + Environment.NewLine;
+            OutputFileText += "\t{" + Environment.NewLine;
+            foreach (string UIProp in UIProps) {
+              OutputFileText += $"\t\tpublic const string {UIProp}Key = \"{UIProp}\";" + Environment.NewLine;
+            }
+            OutputFileText += "\t}" + Environment.NewLine + "}"; 
+            File.WriteAllText(OutputFilename, OutputFileText);
+            
+            ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+    <UsingTask TaskName="UpdateVersionDate" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
         <ParameterGroup>
             <InputFilename ParameterType="System.String" Required="true"/>
             <OutputFilename ParameterType="System.String" Required="true"/>
             <FieldName ParameterType="System.String" Required="true"/>
         </ParameterGroup>
         <Task>
-            <Reference Include="System.Core"/>
             <Reference Include="System.Memory"/>
             <Reference Include="System.Text.Json"/>
             <Using Namespace="System"/>
@@ -49,14 +84,13 @@
             </Code>
         </Task>
     </UsingTask>
-    <UsingTask TaskName="IncrementVersion" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <UsingTask TaskName="IncrementVersion" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
         <ParameterGroup>
             <InputFilename ParameterType="System.String" Required="true"/>
             <OutputFilename ParameterType="System.String" Required="true"/>
             <FieldName ParameterType="System.String" Required="true"/>
         </ParameterGroup>
         <Task>
-            <Reference Include="System.Core"/>
             <Reference Include="System.Memory"/>
             <Reference Include="System.Text.Json"/>
             <Using Namespace="System"/>

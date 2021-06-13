@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<uidefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="https://prd-use-rad-assets.azurewebsites.net/ExtensionsSchemaDefinition.xsd">
+    <version ver="2.0"/>
+    <tile icon="#icFanOn" navigation="show:MainPage" showinhomepage="#false"
+          showinroompage="#true"/>
+    <layouts>
+        <layout id="MainPage" isdefaultlayout="#true">
+            <controls>
+                <controlgroup>
+                    <toggle id="FanPowerToggle" label="^FanPowerToggleLabel" value="{FanPowerToggleValue}"/>
+                    <raiselowerwithtext valueformat="^FanSpeedDisplayFormat" id="FanSpeedSlider" label="^FanSpeedSliderLabel" value="{FanSpeedSliderValue}"/>
+                    <selectorbutton id="FanDirection" label="^FanDirectionLabel" value="{FanDirectionValue}"/>
+                    <toggleslider id="FanLightToggle" label="^FanLightToggleLabel" togglevalue="{FanLightToggleValue}"
+                                  slidervalue="{FanLightSliderValue}"
+                                  visible="{FanLightToggleVisible}"/>
+                </controlgroup>
+            </controls>
+        </layout>
+    </layouts>
+    <alerts/>
+</uidefinition>

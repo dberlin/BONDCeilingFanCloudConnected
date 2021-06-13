@@ -1,0 +1,92 @@
+{
+  "CrestronSerialDeviceApi": {
+    "DeviceSupport": {
+      "SupportsDisconnect": true
+    },
+    "DeviceSupport2": [
+      "SupportsReconnect"
+    ],
+    "GeneralInformation": {
+      "DeviceType": "Fan",
+      "Manufacturer": "Mirke Air",
+      "BaseModel": "Smart By Bond",
+      "VersionDate": "2021-06-12 23:07:46.1169",
+      "DriverVersion": "4.1.0.82",
+      "SdkVersion": "8.0.0",
+      "Description": "Ceiling Fan",
+      "Guid": "12661764-59ED-47CC-B06C-DE477DCE84AD",
+      "ExtensionDeviceData": {
+        "IsExtensionDevice": true,
+        "IsMediaDevice": false,
+        "IsMediaSource": false
+      },
+      "SupportedSeries": [
+      ],
+      "SupportedModels": [
+      ]
+    },
+    "Api": {
+      "Communication": {
+        "CommunicationType": 5,
+        "Protocol": -1,
+        "Baud": -1,
+        "Parity": -1,
+        "HwHandshake": -1,
+        "SwHandshake": -1,
+        "DataBits": 0,
+        "StopBits": -1,
+        "Port": 4444,
+        "EnableAutoPolling": true,
+        "EnableAutoReconnect": false,
+        "TimeBetweenCommands": 250,
+        "ResponseTimeout": 3000,
+        "WaitForResponse": false,
+        "IpProtocol": 0,
+        "IsUserAdjustable": false,
+        "Authentication": {
+          "UsernameRequired": false,
+          "PasswordRequired": false,
+          "Type": "None",
+          "Required": false,
+          "DefaultUsername": "",
+          "DefaultPassword": ""
+        },
+        "IsSecure": false,
+        "UserAdjustableProperties": [],
+        "DeviceId": 0
+      }
+    },
+    "UserAttributes": [
+      {
+        "TypeName": "Custom",
+        "ParameterId": "Token",
+        "Label": "BOND Token needed for local communication",
+        "Description": "This is the BOND token used to authentication with the device. It can be found in the BOND application advanced settings for the device",
+        "Persistent": true,
+        "RequiredForConnection": "Before",
+        "Data": {
+          "DataType": "String",
+          "Mask": "",
+          "DefaultValue": ""
+        }
+      },
+      {
+        "TypeName": "Custom",
+        "ParameterId": "Hostname",
+        "Label": "Hostname of the device",
+        "Description": "This is the hostname (or IP address) of the BOND device",
+        "Persistent": true,
+        "RequiredForConnection": "Before",
+        "Data": {
+          "DataType": "String",
+          "Mask": "",
+          "DefaultValue": ""
+        }
+      }
+    ],
+    "Dependencies": [
+      "Flurl.dll",
+      "Flurl.Http.dll"
+    ]
+  }
+}

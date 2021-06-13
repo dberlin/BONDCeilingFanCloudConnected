@@ -1,0 +1,7 @@
+{
+  "FanPowerToggleLabel": "Fan Power",
+  "FanSpeedSliderLabel": "Fan Speed",
+  "FanLightToggleLabel": "Fan Light",
+  "FanDirectionLabel": "Fan Direction",
+  "FanSpeedDisplayFormat": "%s"
+}
