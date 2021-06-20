@@ -8,10 +8,10 @@
     ],
     "GeneralInformation": {
       "DeviceType": "Fan",
-      "Manufacturer": "Mirke Air",
+      "Manufacturer": "Minke Air",
       "BaseModel": "Smart By Bond",
-      "VersionDate": "2021-06-12 23:07:46.1169",
-      "DriverVersion": "4.1.0.82",
+      "VersionDate": "2021-06-13 10:27:00.7820",
+      "DriverVersion": "4.1.0.99",
       "SdkVersion": "8.0.0",
       "Description": "Ceiling Fan",
       "Guid": "12661764-59ED-47CC-B06C-DE477DCE84AD",
@@ -85,8 +85,7 @@
       }
     ],
     "Dependencies": [
-      "Flurl.dll",
-      "Flurl.Http.dll"
+      "Flurl.dll"
     ]
   }
 }

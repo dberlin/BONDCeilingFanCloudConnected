@@ -1,30 +1,26 @@
 ﻿namespace BONDCeilingFanCloudConnected
 {
     using System;
+    using System.Net;
     using BONDDevice;
     using Crestron.RAD.Common.BasicDriver;
     using Crestron.RAD.Common.Transports;
     using Flurl;
-    using Flurl.Http;
     using Newtonsoft.Json;
 
     public class BONDProtocol : ABaseDriverProtocol
     {
         private const string TokenAttribute = "Token";
         private const string HostnameAttribute = "Hostname";
-        private static readonly TimeSpan ActionTimeoutLength = TimeSpan.FromSeconds(5);
         private readonly object updateLock = new object();
-        public DeviceProperties DeviceProperties = null;
         private string deviceToken;
         private string deviceUrl;
 
         public BONDProtocol(ISerialTransport transport, byte id) : base(transport, id)
         {
-            this.EnableLogging = true;
             this.PollingInterval = 10000;
         }
-
-
+        
         public event EventHandler<DeviceState> StateReceivedEvent;
 
         public void Start()
@@ -74,15 +70,21 @@
             return this.MakeDeviceURL().AppendPathSegments("/actions", $"/{action}");
         }
 
+
         protected DeviceInfo GetInfo()
         {
             if (!this.CheckURLAndToken()) return null;
             try
             {
-                return this.MakeDeviceURL()
-                    .WithHeader("BOND-Token", this.deviceToken)
-                    .GetJsonAsync<DeviceInfo>()
-                    .Result;
+                var infoURL = this.MakeDeviceURL();
+                var client = new WebClient();
+                client.Headers.Add("BOND-Token", this.deviceToken);
+
+                var downloadedString = client.DownloadString(infoURL);
+                if (!string.IsNullOrEmpty(downloadedString))
+                    return JsonConvert.DeserializeObject<DeviceInfo>(downloadedString);
+                BONDLogging.TraceMessage(this.EnableLogging, "Response empty while retrieving info");
+                return null;
             }
             catch (Exception e)
             {
@@ -97,10 +99,16 @@
 
             try
             {
-                return this.MakeDeviceURL("/properties")
-                    .WithHeader("BOND-Token", this.deviceToken)
-                    .GetJsonAsync<DeviceProperties>()
-                    .Result;
+                var propertyUrl = this.MakeDeviceURL("/properties");
+                var client = new WebClient();
+                client.Headers.Add("BOND-Token", this.deviceToken);
+
+                var downloadedString = client.DownloadString(propertyUrl);
+                if (!string.IsNullOrEmpty(downloadedString))
+                    return JsonConvert.DeserializeObject<DeviceProperties>(downloadedString);
+                BONDLogging.TraceMessage(this.EnableLogging, "Response empty while retrieving properties");
+
+                return null;
             }
             catch (Exception e)
             {
@@ -134,12 +142,13 @@
             {
                 lock (this.updateLock)
                 {
-                    return this.MakeActionURL(actionName)
-                        .WithHeader("BOND-Token", this.deviceToken)
-                        .WithTimeout(ActionTimeoutLength)
-                        .PutAsync()
-                        .Result
-                        .StatusCode == 200;
+                    var actionUrl = this.MakeActionURL(actionName);
+                    var client = new WebClient();
+                    client.Headers.Add("BOND-Token", this.deviceToken);
+                    var responseString = client.UploadString(actionUrl, "PUT", "{}");
+                    if (!string.IsNullOrEmpty(responseString)) return true;
+                    BONDLogging.TraceMessage(this.EnableLogging, "Error running action - empty response");
+                    return false;
                 }
             }
             catch (Exception e)
@@ -157,16 +166,20 @@
                 lock (this.updateLock)
                 {
                     var serializedContent = JsonConvert.SerializeObject(new {argument = value});
-                    return this.MakeActionURL(actionName)
-                        .WithHeader("BOND-Token", this.deviceToken)
-                        .WithTimeout(ActionTimeoutLength)
-                        .PutStringAsync(serializedContent)
-                        .Result.StatusCode == 200;
+                    var actionUrl = this.MakeActionURL(actionName);
+                    var client = new WebClient();
+                    client.Headers.Add("BOND-Token", this.deviceToken);
+                    var responseString = client.UploadString(actionUrl, "PUT", serializedContent);
+                    if (!string.IsNullOrEmpty(responseString)) return true;
+                    BONDLogging.TraceMessage(this.EnableLogging, "Error running action - empty response");
+                    return false;
                 }
             }
             catch (Exception e)
             {
                 BONDLogging.TraceMessage(this.EnableLogging, $"Error running action:{e}");
+
+
                 return false;
             }
         }
@@ -216,10 +229,20 @@
             {
                 lock (this.updateLock)
                 {
-                    var deviceState = this.MakeDeviceURL("/state")
-                        .WithHeader("BOND-Token", this.deviceToken)
-                        .GetJsonAsync<DeviceState>().Result;
-                    this.StateReceivedEvent?.Invoke(this, deviceState);
+                    var stateUrl = this.MakeDeviceURL("/state");
+                    var client = new WebClient();
+                    client.Headers.Add("BOND-Token", this.deviceToken);
+
+                    var downloadedString = client.DownloadString(stateUrl);
+                    if (!string.IsNullOrEmpty(downloadedString))
+                    {
+                        var deviceState = JsonConvert.DeserializeObject<DeviceState>(downloadedString);
+                        this.StateReceivedEvent?.Invoke(this, deviceState);
+                    }
+                    else
+                    {
+                        BONDLogging.TraceMessage(this.EnableLogging, "Response empty while retrieving state");
+                    }
                 }
             }
             catch (Exception e)

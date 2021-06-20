@@ -1,13 +1,11 @@
 ﻿namespace BONDCeilingFanCloudConnected
 {
-    using System;
     using System.Collections.Generic;
     using BONDDevice;
     using Crestron.RAD.Common.Enums;
     using Crestron.RAD.Common.Interfaces;
     using Crestron.RAD.Common.Interfaces.ExtensionDevice;
     using Crestron.RAD.DeviceTypes.ExtensionDevice;
-    using Flurl.Http;
     using Newtonsoft.Json;
     using static BONDCeilingFanConstants;
 
@@ -27,17 +25,11 @@
 
         public BONDCeilingFanCloudConnected()
         {
-            FlurlHttp.Configure(settings =>
-            {
-                settings.ConnectionLeaseTimeout = TimeSpan.FromMinutes(5);
-//                settings.BeforeCall = this.HandleFlurlCall;
-            });
             this.ConnectionTransport = new BONDTransport();
             this.DeviceProtocol = this.protocol = new BONDProtocol(this.ConnectionTransport, this.Id);
             this.DeviceProtocol.Initialize(this.DriverData);
             this.protocol.StateReceivedEvent -= this.OnStateReceived;
             this.protocol.StateReceivedEvent += this.OnStateReceived;
-            this.EnableLogging = true;
             this.CreateDeviceDefinition();
             this.Initialize();
         }
@@ -69,11 +61,6 @@
             this.protocol.Start();
         }
 
-        private void HandleFlurlCall(FlurlCall arg)
-        {
-            BONDLogging.TraceMessage(this.EnableLogging,
-                $"Making Flurl call to {arg.Request.Url}, body is {arg.RequestBody}");
-        }
 
         private void OnStateReceived(object sender, DeviceState deviceState)
         {
