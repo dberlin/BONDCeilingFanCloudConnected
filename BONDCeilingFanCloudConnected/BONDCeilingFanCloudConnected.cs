@@ -117,6 +117,12 @@
             this.protocol.TurnFanOn();
         }
 
+        [ProgrammableOperation("Toggle Fan Power")]
+        private void ToggleFanPower()
+        {
+            this.protocol.ToggleFan();
+        }
+
         [ProgrammableOperation("Increase Fan Speed")]
         private void IncreaseFanSpeed()
         {
@@ -154,6 +160,12 @@
         private void TurnLightOff()
         {
             this.protocol.TurnLightOff();
+        }
+
+        [ProgrammableOperation("Toggle Light Power")]
+        private void ToggleLight()
+        {
+            this.protocol.ToggleLight();
         }
 
         protected override IOperationResult SetDriverPropertyValue<T>(string propertyKey, T value)

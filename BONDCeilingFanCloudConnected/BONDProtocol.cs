@@ -210,6 +210,11 @@
             return this.RunAction("TurnOff");
         }
 
+        public bool ToggleFan()
+        {
+            return this.RunAction("TogglePower");
+        }
+
         public bool IncreaseFanSpeed(int amount)
         {
             return this.RunAction("IncreaseSpeed", amount);
@@ -238,6 +243,11 @@
         public bool TurnLightOff()
         {
             return this.RunAction("TurnLightOff");
+        }
+
+        public bool ToggleLight()
+        {
+            return this.RunAction("ToggleLight");
         }
 
         protected override void Poll()
