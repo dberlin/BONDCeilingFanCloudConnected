@@ -20,7 +20,7 @@
         {
             this.PollingInterval = 10000;
         }
-        
+
         public event EventHandler<DeviceState> StateReceivedEvent;
 
         public void Start()
@@ -208,6 +208,26 @@
         public bool TurnFanOff()
         {
             return this.RunAction("TurnOff");
+        }
+
+        public bool IncreaseFanSpeed(int amount)
+        {
+            return this.RunAction("IncreaseSpeed", amount);
+        }
+
+        public bool DecreaseFanSpeed(int amount)
+        {
+            return this.RunAction("DecreaseSpeed", amount);
+        }
+
+        public bool IncreaseBrightness(int amount)
+        {
+            return this.RunAction("IncreaseBrightness", amount);
+        }
+
+        public bool DecreaseBrightness(int amount)
+        {
+            return this.RunAction("DecreaseBrightness", amount);
         }
 
         public bool TurnLightOn()

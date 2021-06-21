@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using BONDDevice;
+    using Crestron.RAD.Common.Attributes.Programming;
     using Crestron.RAD.Common.Enums;
     using Crestron.RAD.Common.Interfaces;
     using Crestron.RAD.Common.Interfaces.ExtensionDevice;
@@ -101,6 +102,58 @@
         protected override IOperationResult DoCommand(string command, string[] parameters)
         {
             return new OperationResult(OperationResultCode.Success);
+        }
+
+        [ProgrammableOperation("Turn Fan On")]
+        private void TurnFanOn()
+        {
+            this.protocol.TurnFanOn();
+        }
+
+
+        [ProgrammableOperation("Turn Fan Off")]
+        private void TurnFanOff()
+        {
+            this.protocol.TurnFanOn();
+        }
+
+        [ProgrammableOperation("Increase Fan Speed")]
+        private void IncreaseFanSpeed()
+        {
+            this.protocol.IncreaseFanSpeed(1);
+        }
+
+        [ProgrammableOperation("Decrease Fan Speed")]
+        private void DecreaseFanSpeed()
+        {
+            this.protocol.DecreaseFanSpeed(1);
+        }
+
+        [ProgrammableOperation("Increase Light Brightness")]
+        private void IncreaseBrightness(
+            [Display("Percent")] [Unit(Unit.Percentage)] [Default(10)] [Min(1)] [Max(100)]
+            int brightness)
+        {
+            this.protocol.IncreaseBrightness(brightness);
+        }
+
+        [ProgrammableOperation("Decrease Light Brightness")]
+        private void DecreaseBrightness([Display("Percent")] [Unit(Unit.Percentage)] [Default(10)] [Min(1)] [Max(100)]
+            int brightness)
+        {
+            this.protocol.DecreaseBrightness(brightness);
+        }
+
+        [ProgrammableOperation("Turn Light On")]
+        private void TurnLightOn()
+        {
+            this.protocol.TurnLightOn();
+        }
+
+        [ProgrammableOperation("Turn Light Off")]
+        private void TurnLightOff()
+        {
+            this.protocol.TurnLightOff();
         }
 
         protected override IOperationResult SetDriverPropertyValue<T>(string propertyKey, T value)
